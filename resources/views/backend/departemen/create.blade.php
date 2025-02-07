@@ -32,8 +32,8 @@
                                 <label class="form-label">Departemen</label>
                                 <select name="kategori_id" class="form-control">
                                     <option value="">-- Pilih Kategori --</option>
-                                    @foreach ($kategori as $kat)
-                                        <option value="{{ $kat->id }}">{{ $kat->kategori }}</option>
+                                    @foreach ($kategori as $data)
+                                        <option value="{{ $data->id }}">{{ $data->kategori }}</option>
                                     @endforeach
                                 </select>
                             </div>

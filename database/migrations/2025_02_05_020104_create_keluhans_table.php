@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('keluhans', function (Blueprint $table) {
             $table->id();
-            $table->string('kategori_id');
             $table->string('deskripsi');
             $table->string('departemen_id');
             $table->string('priority_id');

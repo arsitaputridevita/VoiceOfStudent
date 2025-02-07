@@ -14,10 +14,6 @@ class Keluhan extends Model
     protected $fillable = ['kategori_id', 'deskripsi', 'departemen_id', 'priority_id', 'status'];
     protected $visible = ['kategori_id', 'deskripsi', 'departemen_id', 'priority_id', 'status'];
 
-    public function kategori()
-    {
-        return $this->hasMany(Kategori::class, 'kategori_id');
-    }
     public function departemen()
     {
         return $this->hasMany(Departemen::class, 'departemen_id');

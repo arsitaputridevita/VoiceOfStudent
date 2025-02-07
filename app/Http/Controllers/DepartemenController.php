@@ -22,9 +22,9 @@ class DepartemenController extends Controller
      */
     public function create()
     {
-        $kategori = Kategori::all(); // Perbaikan variabel
+        $kategori   = Kategori::all(); // Perbaikan variabel
         $departemen = Departemen::all();
-        return view('backend.departemen.create', compact('kategori','departemen'));
+        return view('backend.departemen.create', compact('kategori', 'departemen'));
     }
 
     /**
@@ -39,14 +39,15 @@ class DepartemenController extends Controller
         $this->validate($request, [
             'nama'        => 'required|string|max:255',
             'kategori_id' => 'required|integer|exists:kategoris,id', // Pastikan kategori_id valid
-            'deskripsi'   => 'required|min:10',
+            'deskripsi'   => 'required|min:1',
             'image'       => 'required|image|mimes:jpeg,jpg,png|max:2048',
         ]);
 
         // Upload dan simpan gambar
         $image     = $request->file('image');
         $imageName = $image->hashName();
-        $image->storeAs('public/departemens', $imageName); // Simpan di storage
+        Storage::putfile('departemens', $image);
+        // $image->storeAs('public/departemens', $imageName); // Simpan di storage
 
         // Simpan data ke database
         Departemen::create([

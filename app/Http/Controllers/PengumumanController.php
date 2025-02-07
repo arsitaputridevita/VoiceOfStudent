@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 use App\Models\Pengumuman;
+use RealRashid\SweetAlert\Facades\Alert;
+
 
 use Illuminate\Http\Request;
 
@@ -12,7 +14,12 @@ class PengumumanController extends Controller
      */
     public function index()
     {
+        
         $pengumuman =Pengumuman::latest()->paginate(5);
+        $title = 'Delete User!';
+        $text  = "Are you sure you want to delete?";
+        confirmDelete($title, $text);
+
         return view('backend.pengumuman.index', compact('pengumuman'));
     }
 
@@ -40,6 +47,8 @@ class PengumumanController extends Controller
         $pengumuman->deskripsi = $request->deskripsi;
         $pengumuman->tanggal = $request->tanggal; 
         $pengumuman->save();
+        Alert::success('Success', 'Success Message');
+
         return redirect()->route('backend.pengumuman.index');
     }
 
@@ -81,6 +90,8 @@ class PengumumanController extends Controller
         $pengumuman->deskripsi  = $request->deskripsi;
         $pengumuman->tanggal = $request->tanggal;
         $pengumuman->save();
+        Alert::success('Success', 'Success Message');
+
         return redirect()->route('backend.pengumuman.index');
 
     }
@@ -92,6 +103,7 @@ class PengumumanController extends Controller
     {
     $pengumuman = Pengumuman::findOrFail($id);
     $pengumuman->delete();
+    toast('Data Delete Succesfully', 'succes')->autoClose(1000);
     return redirect()->route('backend.pengumuman.index');
 
     }

@@ -22,21 +22,15 @@
                                 @endforeach
                             </select>
                         </div>
-
                         <div class="mb-3">
-                            <label class="form-label">Deskripsi</label>
-                            <textarea name="deskripsi" class="form-control"></textarea>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Departemen</label>
-                            <select name="departemen_id" class="form-control">
-                                <option value="">-- Pilih Departemen --</option>
-                                @foreach ($departemen as $data)
-                                    <option value="{{ $data->id }}">{{ $data->id }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                                <label class="form-label">Departemen</label>
+                                <select name="kategori_id" class="form-control">
+                                    <option value="">-- Pilih Kategori --</option>
+                                    @foreach ($kategori as $data)
+                                        <option value="{{ $data->id }}">{{ $data->kategori }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
 
                         <div class="mb-3">
                             <label class="form-label">Priority</label>
@@ -46,6 +40,10 @@
                                     <option value="{{ $data->id }}">{{ $data->priority }}</option>
                                 @endforeach
                             </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Deskripsi</label>
+                            <textarea name="deskripsi" class="form-control"></textarea>
                         </div>
 
                         <button type="submit" class="btn btn-primary">Simpan</button>
