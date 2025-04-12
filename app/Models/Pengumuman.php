@@ -11,4 +11,9 @@ class Pengumuman extends Model
 
     protected $fillable = ['judul', 'deskripsi', 'tanggal'];
 
+//    public function like() {
+    
+//    }
+
+
 }

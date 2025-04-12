@@ -1,30 +1,52 @@
 <?php
-
 namespace App\Http\Controllers;
+
 use App\Models\Pengumuman;
-use RealRashid\SweetAlert\Facades\Alert;
-
-
 use Illuminate\Http\Request;
+use App\Models\Like;
+use Illuminate\Support\Facades\Auth;
+
+
 
 class PengumumanController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Tambahkan middleware untuk memastikan hanya user yang login yang bisa mengakses.
      */
-    public function index()
+    public function __construct()
     {
-        
-        $pengumuman =Pengumuman::latest()->paginate(5);
-        $title = 'Delete User!';
-        $text  = "Are you sure you want to delete?";
-        confirmDelete($title, $text);
-
-        return view('backend.pengumuman.index', compact('pengumuman'));
+        $this->middleware('auth');
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Menampilkan daftar pengumuman.
+     */
+  public function index()
+{
+    $pengumuman = Pengumuman::latest()->get();
+
+    if (request()->is('pengumuman')) {
+        return view('pengumuman', compact('pengumuman'));
+    }
+
+    return view('backend.pengumuman.index', compact('pengumuman'));
+}
+
+
+    // $pengumuman = Pengumuman::latest()->get(); // Ambil semua pengumuman
+
+    // // Jika user mengakses halaman dari '/pengumuman', tampilkan view user
+    //     if (request()->is('pengumuman')) {
+    //         return view('pengumuman', compact('pengumuman'));
+    //     } 
+
+    //     // Jika admin mengakses dari '/backend/pengumuman', tampilkan view admin
+    //     return view('backend.pengumuman.index', compact('pengumuman'));
+
+
+
+    /**
+     * Menampilkan form untuk membuat pengumuman baru.
      */
     public function create()
     {
@@ -32,79 +54,92 @@ class PengumumanController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Menyimpan pengumuman baru ke dalam database.
      */
     public function store(Request $request)
     {
-         $this->validate($request, [
-            'judul' => 'required',
+        $request->validate([
+            'judul'     => 'required',
             'deskripsi' => 'required',
-            'tanggal' => 'required',
+            'tanggal'   => 'required|date',
         ]);
 
-        $pengumuman = new Pengumuman;
-        $pengumuman->judul = $request->judul;
-        $pengumuman->deskripsi = $request->deskripsi;
-        $pengumuman->tanggal = $request->tanggal; 
-        $pengumuman->save();
-        Alert::success('Success', 'Success Message');
+        Pengumuman::create([
+            'judul'     => $request->judul,
+            'deskripsi' => $request->deskripsi,
+            'tanggal'   => $request->tanggal,
+        ]);
 
-        return redirect()->route('backend.pengumuman.index');
+        return redirect()->route('backend.pengumuman.index')->with('success', 'Pengumuman berhasil ditambahkan!');
     }
 
     /**
-     * Display the specified resource.
+     * Menampilkan detail dari satu pengumuman.
      */
-    public function show(string $id)
+    public function show($id)
     {
         $pengumuman = Pengumuman::findOrFail($id);
-        return view('backend.pengumuman.show', compact('pengumuman'));
+        return view('detail_pengumuman', compact('pengumuman'));
     }
+
     /**
-     * Show the form for editing the specified resource.
+     * Menampilkan form edit pengumuman.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
         $pengumuman = Pengumuman::findOrFail($id);
-    return view('backend.pengumuman.edit', compact('pengumuman'));
-    
-        $pengumuman->save();
-        return redirect()->route('backend.pengumuman.index');
-
-
+        return view('backend.pengumuman.edit', compact('pengumuman'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Menyimpan perubahan data pengumuman yang sudah diedit.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        $this->validate($request, [
-    'judul'      => 'required',
-    'deskripsi'     => 'required',
-    'tanggal' => 'required',
-]);
+        $request->validate([
+            'judul'     => 'required',
+            'deskripsi' => 'required',
+            'tanggal'   => 'required|date',
+        ]);
 
         $pengumuman = Pengumuman::findOrFail($id);
-        $pengumuman->judul  = $request->judul;
-        $pengumuman->deskripsi  = $request->deskripsi;
-        $pengumuman->tanggal = $request->tanggal;
-        $pengumuman->save();
-        Alert::success('Success', 'Success Message');
+        $pengumuman->update([
+            'judul'     => $request->judul,
+            'deskripsi' => $request->deskripsi,
+            'tanggal'   => $request->tanggal,
+        ]);
 
-        return redirect()->route('backend.pengumuman.index');
-
+        return redirect()->route('backend.pengumuman.index')->with('success', 'Pengumuman berhasil diperbarui!');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Menghapus pengumuman dari database.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-    $pengumuman = Pengumuman::findOrFail($id);
-    $pengumuman->delete();
-    toast('Data Delete Succesfully', 'succes')->autoClose(1000);
-    return redirect()->route('backend.pengumuman.index');
+        $pengumuman = Pengumuman::findOrFail($id);
+        $pengumuman->delete();
 
+        return redirect()->route('backend.pengumuman.index')->with('success', 'Pengumuman berhasil dihapus!');
     }
+// public function like($id)
+// {
+//     if (!Auth::check()) {
+//         return redirect()->route('login');
+//     }
+
+//     $sudahLike = Like::where('user_id', Auth::id())
+//         ->where('pengumuman_id', $id)
+//         ->exists();
+
+//     if (!$sudahLike) {
+//         Like::create([
+//             'user_id' => Auth::id(),
+//             'pengumuman_id' => $id,
+//         ]);
+//     }
+
+//     return redirect()->back();
+// }
+
 }

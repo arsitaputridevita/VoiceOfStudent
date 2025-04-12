@@ -35,7 +35,7 @@ class PriorityControllers extends Controller
        $priority           = new Priority;
        $priority->priority = $request->priority;
        $priority->save();
-        return redirect()->route('backend.priority.index');
+        return redirect()->route('backend.priority.index')->with('succes', 'Priority berhasil ditambahan!');
     }
     /**
      * Display the specified resource.
@@ -71,7 +71,7 @@ class PriorityControllers extends Controller
        $priority           = Priority::findOrFail($id);
        $priority->priority = $request->priority;
        $priority->save();
-        return redirect()->route('backend.priority.index');
+        return redirect()->route('backend.priority.index')->with('succes','Priority berhasil diupdate!');
 
     }
 
@@ -82,7 +82,7 @@ class PriorityControllers extends Controller
     {
        $priority = Priority::findOrFail($id);
        $priority->delete();
-        return redirect()->route('backend.priority.index');
+        return redirect()->route('backend.priority.index')->with('succes!!','berhasil di delete!');
 
     }
 }

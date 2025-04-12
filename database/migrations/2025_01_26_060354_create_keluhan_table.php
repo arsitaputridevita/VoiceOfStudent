@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('departemen_id');
             $table->string('priority_id');
             $table->enum('status', ['proses', 'sedang diproses', 'selesai'])->default('proses');
+            
             $table->timestamps();
             });
 

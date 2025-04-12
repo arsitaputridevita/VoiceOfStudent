@@ -6,20 +6,28 @@ use Illuminate\Database\Eloquent\Model;
 
 class Keluhan extends Model
 {
-        public $table = 'keluhans';
-
-
+    
     use HasFactory;
 
-    protected $fillable = ['kategori_id', 'deskripsi', 'departemen_id', 'priority_id', 'status'];
-    protected $visible = ['kategori_id', 'deskripsi', 'departemen_id', 'priority_id', 'status'];
+    protected $fillable = ['jenis', 'deskripsi', 'kategori_id', 'priority_id', 'status','like','dislike'];
 
     public function departemen()
     {
-        return $this->hasMany(Departemen::class, 'departemen_id');
+        return $this->belongsTo(Departemen::class);
+    }
+
+    public function kategori()
+    {
+        return $this->belongsTo(Kategori::class);
     }
     public function priority()
     {
-        return $this->hasMany(Priority::class, 'priority_id');
+        return $this->belongsTo(Priority::class);
+    }
+
+    public function tanggapan()
+    {
+        return $this->hasOne(Tanggapan::class, 'keluhan_id', 'id');
     }
 }
+

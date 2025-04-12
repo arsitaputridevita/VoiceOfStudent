@@ -13,9 +13,13 @@ return new class extends Migration
     {
         Schema::create('keluhans', function (Blueprint $table) {
             $table->id();
+            $table->string('jenis');
             $table->string('deskripsi');
-            $table->string('departemen_id');
-            $table->string('priority_id');
+            $table->unsignedBigInteger('kategori_id');
+            $table->unsignedBigInteger('priority_id');
+            $table->unsignedBigInteger('departemen_id');
+            $table->unsignedInteger('like')->default(0);
+            $table->unsignedInteger('dislike')->default(0);
             $table->enum('status', ['proses', 'sedang diproses', 'selesai'])->default('proses');
             $table->timestamps();
 

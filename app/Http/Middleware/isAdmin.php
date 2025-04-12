@@ -18,9 +18,9 @@ class isAdmin
     public function handle(Request $request, Closure $next): Response
     {
        if (Auth::user()->isAdmin != 1) {
-            return redirect('/');
+           return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman admin.');
         }
-        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman admin.');
+        return redirect('/home');
 
         return $next($request);
     }

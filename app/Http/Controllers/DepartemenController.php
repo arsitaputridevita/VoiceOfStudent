@@ -11,11 +11,18 @@ class DepartemenController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $departemen = Departemen::latest()->paginate(5);
-        return view('backend.departemen.index', compact('departemen'));
+   public function index()
+{
+    $departemen = Departemen::latest()->get(); // Ambil semua departemen
+
+    // Jika user mengakses halaman dari '/departemen', tampilkan view user
+    if (request()->is('departemen')) {
+        return view('departemen', compact('departemen'));
     }
+
+    // Jika admin mengakses dari '/backend/departemen', tampilkan view admin
+    return view('backend.departemen.index', compact('departemen'));
+}
 
     /**
      * Show the form for creating a new resource.
@@ -67,7 +74,7 @@ class DepartemenController extends Controller
     public function show(string $id)
     {
         $departemen = Departemen::findOrFail($id);
-        return view('backend.departemen.show', compact('departemen'));
+        return view('detail_departemen', compact('departemen'));
     }
 
     /**
@@ -105,7 +112,8 @@ class DepartemenController extends Controller
             // Upload gambar baru
             $image     = $request->file('image');
             $imageName = $image->hashName();
-            $image->storeAs('public/departemens', $imageName);
+            Storage::putfile('departemens', $image);
+            // $image->storeAs('public/departemens', $imageName);
             $departemen->image = $imageName;
         }
 

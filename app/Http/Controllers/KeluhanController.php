@@ -1,104 +1,164 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Keluhan;
 use App\Models\Departemen;
+use App\Models\Kategori;
+use App\Models\Keluhan;
 use App\Models\Priority;
+use App\Models\Tanggapan;
+use Illuminate\Http\Request;
 
 class KeluhanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-       $keluhan = Keluhan::latest()->paginate(5);
-    return view('backend.keluhan.index', compact('keluhan'));
+        $jenis  = request()->get('jenis');
+        $status = request()->get('status');
 
+        $keluhanQuery = Keluhan::with(['kategori', 'priority', 'tanggapan', 'departemen'])->latest();
+
+        if ($jenis) {
+            $keluhanQuery->where('jenis', $jenis);
+        }
+
+        if ($status) {
+            $keluhanQuery->where('status', $status);
+        }
+
+        $keluhan = $keluhanQuery->get();
+
+        if (request()->is('keluhan')) {
+            return view('user.keluhan.index', compact('keluhan'));
+        }
+
+        return view('backend.keluhan.index', compact('keluhan'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
+        $kategori   = Kategori::all();
+        $priority   = Priority::all();
         $departemen = Departemen::all();
-        $priority  = Priority::all();
-        $keluhan = Keluhan::all();
-        return view('backend.keluhan.create', compact('kategori','departemen','priority','keluhan'));
+
+        return view('user.keluhan.create', compact('kategori', 'priority', 'departemen'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $this->validate($request, [
-        'deskripsi'   => 'required|min:10',
-        'departemen_id' => 'required',
-        'priority_id' => 'required',
-]);
+        $request->validate([
+            'jenis'         => 'required',
+            'deskripsi'     => 'required|min:10',
+            'kategori_id'   => 'required|exists:kategoris,id',
+            'priority_id'   => 'required|exists:priorities,id',
+            'departemen_id' => 'required|exists:departemens,id',
+        ]);
 
-// Buat objek Departemen
-    $keluhan              = new Keluhan();
-        $keluhan->deskripsi   = $request->deskripsi;
-    $keluhan->departemen_id = $request->departemen_id;
-    $keluhan->priority_id = $request->priority_id;
-    $keluhan->save();
+        Keluhan::create($request->all());
 
-return redirect()->route('backend.keluhan.index')->with('success', 'Departemen berhasil ditambahkan.');
-
-
+        return redirect()->route('user.keluhan.index')->with('success', 'Keluhan berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $keluhan = Keluhan::with(['tanggapan', 'departemen'])->findOrFail($id);
+        return view('user.keluhan.show', compact('keluhan'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit($id)
     {
-        $departemen = Departemen::findOrFail($id);
-        $priority = Priority::all();
-        $keluhan = Keluhan::all();
-        return view('backend.departemen.edit', compact('departemen', 'priority','keluhan'));
+        $keluhan    = Keluhan::findOrFail($id);
+        $kategori   = Kategori::all();
+        $priority   = Priority::all();
+        $departemen = Departemen::all();
 
+        if (request()->is('user/keluhan/*/edit')) {
+            return view('user.keluhan.edit', compact('keluhan', 'kategori', 'priority', 'departemen'));
+        }
+
+        return view('backend.keluhan.edit', compact('keluhan', 'kategori', 'priority', 'departemen'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        $this->validate($request, [
-    'deskripsi'   => 'required|min:1',
-    'departemen_id' => 'required|',
-    'priority_id' => 'required|',
+        $request->validate([
+            'jenis'         => 'required',
+            'deskripsi'     => 'required|min:10',
+            'kategori_id'   => 'required|exists:kategoris,id',
+            'priority_id'   => 'required|exists:priorities,id',
+            'departemen_id' => 'required|exists:departemens,id',
+        ]);
 
-]);
+        $keluhan = Keluhan::findOrFail($id);
+        $keluhan->update($request->all());
 
-    $keluhan              = Keluhan::findOrFail($id);
-    $keluhan->deskripsi   = $request->deskripsi;
-    $keluhan->departemen_id = $request->departemen_id;
-    $keluhan->priority_id = $request->priority_id;
-    $keluhan->save();
+        if (request()->is('user/*')) {
+            return redirect()->route('user.keluhan.index')->with('success', 'Keluhan berhasil diperbarui.');
+        }
 
-
+        return redirect()->route('backend.keluhan.index')->with('success', 'Keluhan berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $keluhan = Keluhan::findOrFail($id);
+        $keluhan->delete();
+
+        if (request()->is('user/keluhan/*')) {
+            return redirect()->route('user.keluhan.index')->with('success', 'Keluhan berhasil dihapus.');
+        }
+
+        return redirect()->route('backend.keluhan.index')->with('success', 'Keluhan berhasil dihapus.');
+    }
+
+    public function addTanggapan(Request $request)
+    {
+        $request->validate([
+            'keluhan_id' => 'required',
+            'tanggapan'  => 'required|string',
+        ]);
+
+        Tanggapan::updateOrCreate(
+            ['keluhan_id' => $request->keluhan_id],
+            ['tanggapan' => $request->tanggapan]
+        );
+
+        return redirect()->route('backend.keluhan.index')->with('success', 'Tanggapan berhasil diperbarui.');
+    }
+
+    public function like($id)
+    {
+        $keluhan = Keluhan::findOrFail($id);
+        $keluhan->like += 1;
+        $keluhan->save();
+
+        return response()->json([
+            'success' => true,
+            'like'    => $keluhan->like,
+        ]);
+    }
+
+    public function dislike($id)
+    {
+        $keluhan = Keluhan::findOrFail($id);
+        $keluhan->dislike += 1;
+        $keluhan->save();
+
+        return response()->json([
+            'success' => true,
+            'dislike' => $keluhan->dislike,
+        ]);
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:proses,selesai',
+        ]);
+
+        $keluhan         = Keluhan::findOrFail($id);
+        $keluhan->status = $request->status;
+        $keluhan->save();
+
+        return redirect()->route('backend.keluhan.index')->with('success', 'Status keluhan berhasil diperbarui.');
     }
 }

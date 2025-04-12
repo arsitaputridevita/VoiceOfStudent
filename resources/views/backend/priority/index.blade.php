@@ -28,7 +28,7 @@
 <div class="pagetitle">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="card-title">List priority</h5>
-        <a href="{{ route('backend.priority.create') }}" class="btn btn-primary ms-auto">Tambah departemen</a>
+        <a href="{{ route('backend.priority.create') }}" class="btn btn-primary ms-auto">Tambah</a>
     </div>
 </div>
 

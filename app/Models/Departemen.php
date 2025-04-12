@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Departemen extends Model
 {
+    protected $table = 'departemens'; // Sesuaikan dengan nama tabel
      use HasFactory;
     protected $fillable = ['nama','kategori_id','deskripsi','image'];
     protected $visible = ['nama','kategori_id','deskripsi','image'];
@@ -18,7 +19,7 @@ class Departemen extends Model
 }
 public function keluhan()
 {
-    return $this->belongsTo(Keluhan::class, 'keluhan_id');
+    return $this->hasMany (Keluhan::class, 'keluhan_id');
 }
 
 
