@@ -11,10 +11,10 @@ class Keluhan extends Model
 
     protected $fillable = ['jenis', 'deskripsi', 'kategori_id', 'priority_id', 'status','like','dislike'];
 
-    public function departemen()
-    {
-        return $this->belongsTo(Departemen::class);
-    }
+    // public function departemen()
+    // {
+    //     return $this->belongsTo(Departemen::class);
+    // }
 
     public function kategori()
     {

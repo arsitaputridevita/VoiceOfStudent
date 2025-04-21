@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('deskripsi');
             $table->unsignedBigInteger('kategori_id');
             $table->unsignedBigInteger('priority_id');
-            $table->unsignedBigInteger('departemen_id');
             $table->unsignedInteger('like')->default(0);
             $table->unsignedInteger('dislike')->default(0);
             $table->enum('status', ['proses', 'sedang diproses', 'selesai'])->default('proses');

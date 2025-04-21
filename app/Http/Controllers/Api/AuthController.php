@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Pengumuman;
+use App\Models\Departemen;
+use App\Models\Keluhan;
 
 class AuthController extends Controller
 {
@@ -64,4 +67,33 @@ class AuthController extends Controller
             'message' => 'logout success'
         ]);
     }
+
+     public function Pengumuman()
+{
+    $pengumuman = Pengumuman::all();
+    return response()->json([
+        'success' => true,
+        'message' => 'List Pengumuman',
+        'data' => $pengumuman
+    ], 200);
+}
+
+public function departemen()
+{
+    $departemen = Departemen::all();
+    return response()->json([
+        'success' => true,
+        'message' => 'List departemen',
+        'data' => $departemen
+    ], 200);
+}
+public function keluhan()
+{
+    $keluhan = Keluhan::all();
+    return response()->json([
+        'success' => true,
+        'message' => 'List keluhan',
+        'data' => $keluhan
+    ], 200);
+}
 }

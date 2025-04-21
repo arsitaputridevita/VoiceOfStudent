@@ -17,10 +17,10 @@ class Departemen extends Model
 {
     return $this->belongsTo(Kategori::class, 'kategori_id');
 }
-public function keluhan()
-{
-    return $this->hasMany (Keluhan::class, 'keluhan_id');
-}
+// public function keluhan()
+// {
+//     return $this->hasMany (Keluhan::class, 'keluhan_id');
+// }
 
 
 
